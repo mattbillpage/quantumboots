@@ -20,7 +20,7 @@ public class SeasonEvents {
             if (level.dimension() == Level.OVERWORLD) {
                 SeasonManager manager = SeasonManager.get(level);
                 int before = manager.getCurrentDay();
-                manager.tick(level.getGameTime());
+                manager.tick(level.getOverworldClockTime());
                 if (manager.getCurrentDay() != before) {
                     PacketDistributor.sendToAllPlayers(new SeasonSyncPayload(manager.getCurrentDay()));
                 }

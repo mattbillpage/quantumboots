@@ -46,8 +46,8 @@ public class SeasonManager extends SavedData {
         return currentDay;
     }
 
-    public void tick(long worldTimeDay) {
-        int newDay = (int) worldTimeDay;
+    public void tick(long gameTime) {
+        int newDay = (int) (gameTime / 24000L);
         if (newDay != currentDay) {
             currentDay = newDay;
             setDirty();

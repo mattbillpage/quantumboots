@@ -11,7 +11,6 @@ public class ClientSeasonPayloadHandler {
     public static void handle(final SeasonSyncPayload payload, final net.neoforged.neoforge.network.handling.IPayloadContext context) {
         context.enqueueWork(() -> {
             clientCurrentDay = payload.currentDay();
-            System.out.println("[QuantumBoots] Client received season sync, day=" + clientCurrentDay);
         });
     }
 
