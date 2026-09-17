@@ -33,17 +33,9 @@ public class SeasonManager extends SavedData {
         this.currentDay = currentDay;
     }
 
-    public static Season seasonFromDay(int day) {
-        int seasonIndex = (day / DAYS_PER_SEASON) % 4;
-        return Season.values()[seasonIndex];
-    }
-
     public Season getSeason() {
-        return seasonFromDay(currentDay);
-    }
-
-    public int getCurrentDay() {
-        return currentDay;
+        int seasonIndex = (currentDay / DAYS_PER_SEASON) % 4;
+        return Season.values()[seasonIndex];
     }
 
     public void tick(long worldTimeDay) {
