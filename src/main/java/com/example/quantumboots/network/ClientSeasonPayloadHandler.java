@@ -3,10 +3,6 @@ package com.example.quantumboots.network;
 import com.example.quantumboots.season.SeasonManager;
 import com.example.quantumboots.season.SeasonManager.Season;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.SectionPos;
-
 public class ClientSeasonPayloadHandler {
 
     private static volatile int clientCurrentDay = 0;
@@ -24,28 +20,15 @@ public class ClientSeasonPayloadHandler {
     }
 
     private static void forceChunkRerender() {
-        Minecraft mc = Minecraft.getInstance();
-
-        if (mc.level == null || mc.player == null) {
-            return;
+        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+        if (mc.level != null) {
+            mc.levelRenderer.invalidateCompiledGeometry(
+                mc.level,
+                mc.options,
+                mc.gameRenderer.mainCamera(),
+                mc.getBlockColors()
+            );
         }
-
-        BlockPos pos = mc.player.blockPosition();
-
-        int sectionX = SectionPos.blockToSectionCoord(pos.getX());
-        int sectionY = SectionPos.blockToSectionCoord(pos.getY());
-        int sectionZ = SectionPos.blockToSectionCoord(pos.getZ());
-
-        int radius = mc.options.renderDistance().get();
-
-        mc.levelExtractor.setSectionRangeDirty(
-                sectionX - radius,
-                mc.level.getMinSectionY(),
-                sectionZ - radius,
-                sectionX + radius,
-                mc.level.getMaxSectionY(),
-                sectionZ + radius
-        );
     }
 
     public static int getClientCurrentDay() {
