@@ -74,7 +74,14 @@ public final class ArmourProtection {
         PROTECTION_TABLE.put(Items.NETHERITE_CHESTPLATE, new float[]{22f, 60f, 22f, 22f, 0f});
         PROTECTION_TABLE.put(Items.NETHERITE_LEGGINGS,   new float[]{16.5f, 45f, 16.5f, 16.5f, 0f});
         PROTECTION_TABLE.put(Items.NETHERITE_BOOTS,      new float[]{8.25f, 22.5f, 8.25f, 8.25f, 0f});
+
     }
+
+    // Quantum Boots: clone of Diamond boots in terms of stats.
+    // { Combat, Blast, Fall, Fire, Lightning }
+    // Note: the boots give total fall-damage immunity in ArmourOverhaulEvents,
+    // so if you want the overlay to show that, set the Fall value to 99f.
+    private static final float[] QUANTUM_BOOTS_VALUES = {9.9f, 9.9f, 99.f, 18.6f, 0f};
 
     private static float sumCategory(LivingEntity entity, int categoryIndex) {
         float total = 0f;
@@ -87,6 +94,10 @@ public final class ArmourProtection {
 
     private static float valueFor(Item item, int categoryIndex) {
         float[] values = PROTECTION_TABLE.get(item);
+        // Only runs during gameplay, after registration, so .get() is safe.
+        if (values == null && item == quantumboots.QUANTUM_BOOTS.get()) {
+            values = QUANTUM_BOOTS_VALUES;
+        }
         return values != null ? values[categoryIndex] : 0f;
     }
 

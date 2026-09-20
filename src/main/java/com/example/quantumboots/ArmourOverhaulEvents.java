@@ -4,8 +4,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects; // NEW - for the Quantum Boots jump boost effect
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EquipmentSlot; // NEW - needed to check the boots slot for Quantum Boots
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.player.Player;
@@ -27,24 +30,38 @@ public final class ArmourOverhaulEvents {
     private ArmourOverhaulEvents() {}
 
     /**
-     * Chance (1 in this many ticks) that a thunderstorm strikes a full-copper
-     * player who can see the sky. At 20 ticks/second, 12000 averages out to
-     * about once every 10 minutes of storm exposure - tune this to taste.
+     * Chance (1 in this many ticks) that a thunderstorm strikes a full-copper player who can see the sky.
      * Lower = more frequent strikes.
      */
     private static final int LIGHTNING_ATTRACTION_CHANCE = 3000;
+
+    // NEW - how long each refresh of Quantum Boots' Jump Boost lasts, in
+    // ticks (20 ticks = 1 second, so 60 = 3 seconds as requested). Since
+    // this gets reapplied every tick while sprinting, the effect never
+    // actually counts down until the player stops sprinting - at which
+    // point the last-applied 3 seconds simply plays out normally.
+    private static final int QUANTUM_BOOTS_JUMP_BOOST_DURATION_TICKS = 60;
+
+    // Jump Boost amplifier (0 = Jump Boost I, 1 = Jump Boost II, etc.)
+    private static final int QUANTUM_BOOTS_JUMP_BOOST_AMPLIFIER = 0;
 
     /**
      * Fires once the final damage number is known, before it's actually
      * applied to the entity. Reduces damage based on which category the
      * damage falls into and how much protection the entity's armour
-     * provides for that category. All the actual numbers live in
-     * ArmourProtection.
+     * provides for that category.
      */
     @SubscribeEvent
     public static void onFinalDamage(LivingDamageEvent.Pre event) {
         LivingEntity entity = event.getEntity();
         DamageSource source = event.getSource();
+
+        // Quantum Boots: total fall-damage immunity
+        if (source.is(DamageTypeTags.IS_FALL)
+                && entity.getItemBySlot(EquipmentSlot.FEET).is(quantumboots.QUANTUM_BOOTS.get())) {
+            event.setNewDamage(0f);
+            return;
+        }
 
         float protectionPercent = 0f;
 
@@ -86,6 +103,28 @@ public final class ArmourOverhaulEvents {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
+
+        // NEW - Quantum Boots: continuously refresh Jump Boost while the
+        // player is sprinting. Placed before the copper/lightning logic
+        // below and using its own local variable name (sprintLevel) so it
+        // doesn't touch or reuse anything from the existing block.
+        if (player.level() instanceof ServerLevel //sprintLevel
+                && player.isSprinting()
+                && player.getItemBySlot(EquipmentSlot.FEET).is(quantumboots.QUANTUM_BOOTS.get())) {
+            // NOTE: MobEffects.JUMP_BOOST is the current documented name as
+            // of recent versions (it used to be MobEffects.JUMP in older
+            // ones). Given this version has already renamed other vanilla
+            // constants elsewhere (EntityType -> EntityTypes), double-check
+            // this one against your IDE's autocomplete if it doesn't
+            // resolve - MobEffects.JUMP is the most likely fallback name.
+            player.addEffect(new MobEffectInstance(
+                    MobEffects.JUMP_BOOST,
+                    QUANTUM_BOOTS_JUMP_BOOST_DURATION_TICKS,
+                    QUANTUM_BOOTS_JUMP_BOOST_AMPLIFIER,
+                    false, // ambient
+                    true   // show particles
+            ));
+        }
 
         // Only run server-side - spawning entities client-side would just
         // desync, since the server is authoritative over world state.
