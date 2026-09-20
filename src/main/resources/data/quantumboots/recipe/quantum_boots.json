@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ABA",
+    "C C"
+  ],
+  "key": {
+    "A": "minecraft:slime_block",
+    "B": "minecraft:netherite_boots",
+    "C": "minecraft:leather_boots" 
+  },
+  "result": {
+    "id": "quantumboots:quantum_boots",
+    "count": 1
+  }
+}

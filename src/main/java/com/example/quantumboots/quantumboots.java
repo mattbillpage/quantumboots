@@ -1,5 +1,7 @@
 package com.example.quantumboots;
 
+import java.util.Map; // NEW - for the armour material's defence map
+
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -7,16 +9,22 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier; // NEW - for the equipment asset id
+import net.minecraft.resources.ResourceKey; // NEW - for the equipment asset key
+import net.minecraft.sounds.SoundEvents; // NEW - equip sound for the material
+import net.minecraft.tags.ItemTags; // NEW - repair tag for the material
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorMaterial; // NEW - custom material (replaces ArmorMaterials)
+import net.minecraft.world.item.equipment.ArmorType; // for Quantum Boots' equipment slot
+import net.minecraft.world.item.equipment.EquipmentAsset; // NEW
+import net.minecraft.world.item.equipment.EquipmentAssets; // NEW
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -45,23 +53,39 @@ public class quantumboots {
     // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "quantumboots" namespace
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
-    // Creates a new Block with the id "quantumboots:example_block", combining the namespace and path
-    public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", p -> p.mapColor(MapColor.STONE));
-    // Creates a new BlockItem with the id "quantumboots:example_block", combining the namespace and path
-    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
+    public static final ResourceKey<EquipmentAsset> QUANTUM_ASSET = ResourceKey.create(
+            EquipmentAssets.ROOT_ID,
+            Identifier.fromNamespaceAndPath(MODID, "quantum"));
 
-    // Creates a new food item with the id "quantumboots:example_id", nutrition 1 and saturation 2
-    public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item", p -> p.food(new FoodProperties.Builder()
-            .alwaysEdible().nutrition(1).saturationModifier(2f).build()));
+    // NEW - Our own armour material. These are Netherite's numbers, matching
+    // what the boots used before. Change them freely.
+    public static final ArmorMaterial QUANTUM_MATERIAL = new ArmorMaterial(
+            37,                                                   // durability multiplier
+            Map.of(ArmorType.BOOTS, 3,
+                   ArmorType.LEGGINGS, 6,
+                   ArmorType.CHESTPLATE, 8,
+                   ArmorType.HELMET, 3),                          // armour points per slot
+            15,                                                   // enchantability
+            SoundEvents.ARMOR_EQUIP_NETHERITE,                    // equip sound
+            3.0F,                                                 // toughness
+            0.1F,                                                 // knockback resistance
+            ItemTags.REPAIRS_NETHERITE_ARMOR,                     // repair tag
+            QUANTUM_ASSET);                                       // worn texture asset
+
+    // CHANGED - now uses QUANTUM_MATERIAL instead of ArmorMaterials.NETHERITE
+    public static final DeferredItem<Item> QUANTUM_BOOTS = ITEMS.registerItem(
+            "quantum_boots",
+            properties -> new Item(properties.humanoidArmor(QUANTUM_MATERIAL, ArmorType.BOOTS))
+    );
 
     // Creates a creative tab with the id "quantumboots:example_tab" for the example item, that is placed after the combat tab
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
+    /*public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.quantumboots")) //The language key for the title of your CreativeModeTab
             .withTabsBefore(CreativeModeTabs.COMBAT)
             .icon(() -> EXAMPLE_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(EXAMPLE_ITEM.get());// Add the example item to the tab. For your own tabs, this method is preferred over the event
-            }).build());
+            }).build());*/
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
@@ -76,42 +100,37 @@ public class quantumboots {
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
 
-        // Register ourselves for server and other game events we are interested in.
-        // Note that this is necessary if and only if we want *this* class (quantumboots) to respond directly to events.
-        // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
-        NeoForge.EVENT_BUS.register(this);
-
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        //modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
         // Some common setup code
-        LOGGER.info("HELLO FROM COMMON SETUP");
+        //LOGGER.info("HELLO FROM COMMON SETUP");
 
-        if (Config.LOG_DIRT_BLOCK.getAsBoolean()) {
+        /*if (Config.LOG_DIRT_BLOCK.getAsBoolean()) {
             LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
         }
+        */
+        //LOGGER.info("{}{}", Config.MAGIC_NUMBER_INTRODUCTION.get(), Config.MAGIC_NUMBER.getAsInt());
 
-        LOGGER.info("{}{}", Config.MAGIC_NUMBER_INTRODUCTION.get(), Config.MAGIC_NUMBER.getAsInt());
-
-        Config.ITEM_STRINGS.get().forEach((item) -> LOGGER.info("ITEM >> {}", item));
+       // Config.ITEM_STRINGS.get().forEach((item) -> LOGGER.info("ITEM >> {}", item));
     }
 
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
-            event.accept(EXAMPLE_BLOCK_ITEM);
+        if (event.getTabKey() == CreativeModeTabs.COMBAT) {
+            event.accept(QUANTUM_BOOTS);
         }
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
+    /* You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         // Do something when the server starts
         LOGGER.info("HELLO from server starting");
-    }
+    }*/
 }

@@ -1,0 +1,24 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_chain": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": [ "minecraft:chain" ] }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [ "has_chain" ]
+  ],
+  "rewards": {
+    "recipes": [
+      "quantumboots:chainmail_helmet_from_chain",
+      "quantumboots:chainmail_chestplate_from_chain",
+      "quantumboots:chainmail_leggings_from_chain",
+      "quantumboots:chainmail_boots_from_chain"
+    ]
+  }
+}

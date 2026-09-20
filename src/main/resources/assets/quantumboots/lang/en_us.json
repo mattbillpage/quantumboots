@@ -1,13 +1,3 @@
 {
-  "itemGroup.quantumboots": "Example Mod Tab",
-  "block.quantumboots.example_block": "Example Block",
-  "item.quantumboots.example_item": "Example Item",
-
-  "quantumboots.configuration.title": "quantumboots Configs",
-  "quantumboots.configuration.section.quantumboots.common.toml": "quantumboots Configs",
-  "quantumboots.configuration.section.quantumboots.common.toml.title": "quantumboots Configs",
-  "quantumboots.configuration.items": "Item List",
-  "quantumboots.configuration.logDirtBlock": "Log Dirt Block",
-  "quantumboots.configuration.magicNumberIntroduction": "Magic Number Text",
-  "quantumboots.configuration.magicNumber": "Magic Number"
+  "item.quantumboots.quantum_boots": "Quantum Boots"
 }
