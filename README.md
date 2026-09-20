@@ -1,6 +1,6 @@
 # Quantum Boots
 
-A NeoForge mod for **Minecraft 26.2** that overhauls how armour works. Instead of one generic armour number, every piece protects against specific kinds of damage, each material has its own specialty, and an in-inventory overlay shows exactly what you're protected against. It also adds **Quantum Boots**: fall-proof boots that boost your jump while you sprint.
+A NeoForge mod for **Minecraft 26.2** that overhauls how armour works. Instead of one generic armour number, every piece protects against specific kinds of damage with an in-inventory overlay shows exactly what you're protected against. It also adds **Quantum Boots**: fall-proof boots that boost your jump while you sprint.
 The idea and values for stats (excluding copper) is based upon Better Than Adventure's implementation which can be read about in further detail here <https://bta.miraheze.org/wiki/Armor>
 
 ## Features
