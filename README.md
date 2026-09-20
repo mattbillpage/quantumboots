@@ -43,3 +43,4 @@ Each material has a specialty. Full-set protection:
 
 - Armour protection values are adapted from [Better Than Adventure](https://bta.miraheze.org/wiki/Armor). This mod is not affiliated with or endorsed by Better Than Adventure.
 - Built on the [NeoForge](https://neoforged.net/) MDK.
+- Mattbillpage, Implementation
