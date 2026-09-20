@@ -81,6 +81,12 @@ public final class ArmourOverlayClient {
     private static final int DISABLED_TINT = 0xA0000000;
 
     // -------------------------------------------------------------- render
+
+    /** Opening the recipe book shifts the inventory right, so compare against the centred position. */
+    private static boolean isRecipeBookOpen(InventoryScreen screen) {
+        return screen.getGuiLeft() != (screen.width - 176) / 2;
+    }
+
     @SubscribeEvent
     public static void onScreenRender(ScreenEvent.Render.Post event) {
         if (!(event.getScreen() instanceof InventoryScreen screen)) {
@@ -102,7 +108,7 @@ public final class ArmourOverlayClient {
 
         drawToggle(g, guiLeft + TOGGLE_X, guiTop + TOGGLE_Y);
 
-        if (!overlayEnabled) {
+        if (!overlayEnabled || isRecipeBookOpen(screen)) {
             return;
         }
 
